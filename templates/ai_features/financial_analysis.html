@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block title %}Financial Analysis - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">AI-Powered Financial Analysis</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Tax Optimization</h5>
+                                    <p class="card-text">Get AI-powered suggestions for tax optimization based on your financial data.</p>
+                                    <button class="btn btn-primary" onclick="runAnalysis('TAX_OPTIMIZATION')">Analyze</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Investment Analysis</h5>
+                                    <p class="card-text">Receive personalized investment recommendations based on your risk profile.</p>
+                                    <button class="btn btn-primary" onclick="runAnalysis('INVESTMENT')">Analyze</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Budget Planning</h5>
+                                    <p class="card-text">Get AI-generated budget recommendations for better financial planning.</p>
+                                    <button class="btn btn-primary" onclick="runAnalysis('BUDGET')">Analyze</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="analysisResults" class="mt-4" style="display: none;">
+                        <h3>Analysis Results</h3>
+                        <div class="card">
+                            <div class="card-body" id="resultsContent">
+                                <!-- Results will be displayed here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function runAnalysis(analysisType) {
+    fetch('/ai/financial-analysis/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            analysis_type: analysisType
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultsDiv = document.getElementById('analysisResults');
+        const contentDiv = document.getElementById('resultsContent');
+        
+        if (analysisType === 'TAX_OPTIMIZATION') {
+            contentDiv.innerHTML = `
+                <h4>Tax Optimization Suggestions</h4>
+                <p>Suggested Deductions: $${data.predictions.suggested_deductions}</p>
+                <p>Estimated Tax Savings: $${data.predictions.estimated_tax_savings}</p>
+                <h5>Recommended Strategies:</h5>
+                <ul>
+                    ${data.predictions.recommended_strategies.map(strategy => `<li>${strategy}</li>`).join('')}
+                </ul>
+            `;
+        } else if (analysisType === 'INVESTMENT') {
+            contentDiv.innerHTML = `
+                <h4>Investment Analysis</h4>
+                <p>Risk Score: ${(data.predictions.risk_score * 100).toFixed(1)}%</p>
+                <h5>Recommended Portfolio:</h5>
+                <ul>
+                    <li>Stocks: ${data.predictions.recommended_portfolio.stocks}%</li>
+                    <li>Bonds: ${data.predictions.recommended_portfolio.bonds}%</li>
+                    <li>Cash: ${data.predictions.recommended_portfolio.cash}%</li>
+                </ul>
+            `;
+        }
+        
+        resultsDiv.style.display = 'block';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while running the analysis.');
+    });
+}
+</script>
+{% endblock %} 

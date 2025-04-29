@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Client Dashboard - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- Upcoming Consultations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Upcoming Consultations</h4>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="list-group">
+                            {% for consultation in consultations %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ consultation.service.name }}</h5>
+                                    <small class="text-muted">{{ consultation.date|date:"F d, Y" }} at {{ consultation.time|time:"g:i A" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <span class="badge {% if consultation.status == 'confirmed' %}bg-success
+                                                      {% elif consultation.status == 'pending' %}bg-warning
+                                                      {% else %}bg-info{% endif %}">
+                                        {{ consultation.get_status_display }}
+                                    </span>
+                                    {% if consultation.ai_priority %}
+                                    <span class="badge {% if consultation.ai_priority == 'high' %}bg-danger
+                                                      {% elif consultation.ai_priority == 'medium' %}bg-warning
+                                                      {% else %}bg-success{% endif %}">
+                                        Priority: {{ consultation.ai_priority|title }}
+                                    </span>
+                                    {% endif %}
+                                </p>
+                                <div class="mt-2">
+                                    <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'core:consultation_insights' consultation.id %}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-brain"></i> AI Insights
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No upcoming consultations.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- AI Recommendations -->
+            {% if recommendations %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">AI-Powered Service Recommendations</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for rec in recommendations %}
+                        <div class="col-md-4 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ rec.service.name }}</h5>
+                                    <p class="card-text">{{ rec.reason }}</p>
+                                    <div class="progress mb-2">
+                                        <div class="progress-bar" role="progressbar" 
+                                             style="width: {{ rec.similarity_score|multiply:100 }}%"
+                                             aria-valuenow="{{ rec.similarity_score|multiply:100 }}" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100">
+                                            {{ rec.similarity_score|multiply:100|floatformat:0 }}%
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'core:book_consultation' rec.service.id %}" class="btn btn-primary btn-sm">
+                                        Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Recent AI Analyses -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h4 class="mb-0">Recent AI Analyses</h4>
+                </div>
+                <div class="card-body">
+                    {% if recent_analyses %}
+                        <div class="list-group">
+                            {% for analysis in recent_analyses %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ analysis.consultation.service.name }}</h6>
+                                    <small class="text-muted">{{ analysis.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <span class="badge bg-info">{{ analysis.analysis_type|title }}</span>
+                                </p>
+                                <a href="{% url 'core:consultation_insights' analysis.consultation.id %}" class="btn btn-sm btn-outline-secondary">
+                                    View Analysis
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent analyses available.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Quick Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'core:service_list' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-list"></i> Browse Services
+                        </a>
+                        <a href="{% url 'core:my_consultations' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-calendar"></i> All Consultations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.progress {
+    height: 0.5rem;
+}
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.list-group-item {
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %} 

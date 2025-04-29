@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Account - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Delete Account</h2>
+                    
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <div class="alert alert-danger">
+                        <h4 class="alert-heading">Warning!</h4>
+                        <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+                        <hr>
+                        <p class="mb-0">All your data, including consultations and profile information, will be permanently deleted.</p>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a href="{% url 'accounts:profile' %}" class="btn btn-secondary me-md-2">Cancel</a>
+                            <button type="submit" class="btn btn-danger">Delete Account</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

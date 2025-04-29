@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultant Dashboard - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-3">
+            <!-- Consultant Profile Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ consultant.user_profile.profile_picture.url }}" alt="{{ consultant.full_name }}" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    <h4 class="card-title">{{ consultant.full_name }}</h4>
+                    <p class="text-muted">{{ consultant.specialization }}</p>
+                    <p class="mb-2"><strong>Experience:</strong> {{ consultant.experience_years }} years</p>
+                    <p class="mb-2"><strong>Hourly Rate:</strong> ${{ consultant.hourly_rate }}</p>
+                    <p class="mb-0"><strong>Total Consultations:</strong> {{ total_consultations }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-9">
+            <!-- Pending Consultations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="mb-0">Pending Consultations</h5>
+                </div>
+                <div class="card-body">
+                    {% if pending_consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Mode</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in pending_consultations %}
+                                        <tr>
+                                            <td>{{ consultation.user.get_full_name }}</td>
+                                            <td>{{ consultation.service.name }}</td>
+                                            <td>{{ consultation.date|date:"F d, Y" }}</td>
+                                            <td>{{ consultation.formatted_time }}</td>
+                                            <td>{{ consultation.get_mode_display }}</td>
+                                            <td>
+                                                <a href="{% url 'accounts:consultant_consultation_detail' consultation.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No pending consultations.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- In Progress Consultations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">In Progress Consultations</h5>
+                </div>
+                <div class="card-body">
+                    {% if in_progress_consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Mode</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in in_progress_consultations %}
+                                        <tr>
+                                            <td>{{ consultation.user.get_full_name }}</td>
+                                            <td>{{ consultation.service.name }}</td>
+                                            <td>{{ consultation.date|date:"F d, Y" }}</td>
+                                            <td>{{ consultation.formatted_time }}</td>
+                                            <td>{{ consultation.get_mode_display }}</td>
+                                            <td>
+                                                <a href="{% url 'accounts:consultant_consultation_detail' consultation.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No in-progress consultations.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Completed Consultations -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Completed Consultations</h5>
+                </div>
+                <div class="card-body">
+                    {% if completed_consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Mode</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in completed_consultations %}
+                                        <tr>
+                                            <td>{{ consultation.user.get_full_name }}</td>
+                                            <td>{{ consultation.service.name }}</td>
+                                            <td>{{ consultation.date|date:"F d, Y" }}</td>
+                                            <td>{{ consultation.formatted_time }}</td>
+                                            <td>{{ consultation.get_mode_display }}</td>
+                                            <td>
+                                                <a href="{% url 'accounts:consultant_consultation_detail' consultation.id %}" class="btn btn-sm btn-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No completed consultations.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

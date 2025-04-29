@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Signup - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .signup-container {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        padding: 2rem;
+    }
+    
+    .signup-card {
+        background: white;
+        border-radius: 15px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 500px;
+    }
+    
+    .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .signup-logo {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 1rem;
+    }
+    
+    .signup-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .signup-subtitle {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: var(--dark-color);
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(42, 157, 143, 0.25);
+    }
+    
+    .btn-signup {
+        width: 100%;
+        padding: 0.8rem;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        background: var(--primary-color);
+        border: none;
+    }
+    
+    .btn-signup:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        background: var(--secondary-color);
+    }
+    
+    .error-message {
+        color: #dc3545;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 1.5rem;
+    }
+    
+    .login-link a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+    
+    .login-link a:hover {
+        color: var(--secondary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <div class="signup-header">
+            <img src="{% static 'images/logo.png' %}" alt="Costsecon Accounting Inc" class="signup-logo">
+            <h1 class="signup-title">Admin Signup</h1>
+            <p class="signup-subtitle">Create your admin account</p>
+        </div>
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="first_name" class="form-control" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="last_name" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input type="text" name="phone_number" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Password</label>
+                <input type="password" name="password1" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input type="password" name="password2" class="form-control" required>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Profile Picture</label>
+                <input type="file" name="profile_picture" class="form-control">
+            </div>
+            
+            {% if form.errors %}
+            <div class="error-message">
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary btn-signup">
+                <i class="fas fa-user-plus me-2"></i>Create Account
+            </button>
+            
+            <div class="login-link">
+                Already have an account? <a href="{% url 'accounts:admin_login' %}">Login here</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 

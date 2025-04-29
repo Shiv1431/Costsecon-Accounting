@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Admin Dashboard - Consultation Services{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Filter Form -->
+    <div class="col-md-3 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Filter Consultations</h4>
+                <form method="GET">
+                    {{ filter_form|crispy }}
+                    <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+                    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary w-100 mt-2">Clear Filters</a>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultations List -->
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-body">
+                <h3 class="card-title">All Consultations</h3>
+                {% if consultations %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Service</th>
+                                    <th>Date</th>
+                                    <th>Time</th>
+                                    <th>Mode</th>
+                                    <th>Status</th>
+                                    <th>Payment</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for consultation in consultations %}
+                                <tr>
+                                    <td>{{ consultation.client.username }}</td>
+                                    <td>{{ consultation.service.name }}</td>
+                                    <td>{{ consultation.date }}</td>
+                                    <td>{{ consultation.time }}</td>
+                                    <td>{{ consultation.get_mode_display }}</td>
+                                    <td>{{ consultation.get_status_display }}</td>
+                                    <td>
+                                        {% if consultation.payment_status %}
+                                            <span class="badge bg-success">Paid</span>
+                                        {% else %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if consultation.mode == 'virtual' and not consultation.meeting_link %}
+                                            <a href="{% url 'generate_meeting_link' consultation.id %}" 
+                                               class="btn btn-sm btn-primary">Generate Link</a>
+                                        {% elif consultation.mode == 'virtual' %}
+                                            <a href="{{ consultation.meeting_link }}" 
+                                               class="btn btn-sm btn-success" 
+                                               target="_blank">Join Meeting</a>
+                                        {% endif %}
+                                        
+                                        {% if consultation.feedback %}
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-info" 
+                                                    data-bs-toggle="tooltip" 
+                                                    title="Rating: {{ consultation.feedback.rating }}/5&#10;{{ consultation.feedback.comment }}">
+                                                View Feedback
+                                            </button>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No consultations found.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl, {
+                html: true
+            })
+        })
+    });
+</script>
+{% endblock %}
+{% endblock %} 

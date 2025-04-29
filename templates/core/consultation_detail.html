@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultation Details - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Consultation Details</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Basic Information -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Basic Information</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Service:</strong> {{ consultation.service.name }}</p>
+                                <p><strong>Date:</strong> {{ consultation.date|date:"F d, Y" }}</p>
+                                <p><strong>Time:</strong> {{ consultation.time|time:"g:i A" }}</p>
+                                <p><strong>Mode:</strong> {{ consultation.get_mode_display }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Status:</strong> 
+                                    <span class="badge {% if consultation.status == 'confirmed' %}bg-success
+                                                      {% elif consultation.status == 'pending' %}bg-warning
+                                                      {% elif consultation.status == 'completed' %}bg-info
+                                                      {% else %}bg-danger{% endif %}">
+                                        {{ consultation.get_status_display }}
+                                    </span>
+                                </p>
+                                <p><strong>Payment Status:</strong> 
+                                    <span class="badge {% if consultation.payment_status %}bg-success{% else %}bg-danger{% endif %}">
+                                        {% if consultation.payment_status %}Paid{% else %}Pending{% endif %}
+                                    </span>
+                                </p>
+                                <p><strong>Amount:</strong> ₹{{ consultation.payment_amount }}</p>
+                                {% if consultation.consultant %}
+                                    <p><strong>Consultant:</strong> {{ consultation.consultant.full_name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Meeting Details -->
+                    {% if consultation.mode == 'virtual' and consultation.meeting_link %}
+                    <div class="mb-4">
+                        <h4 class="text-primary">Meeting Details</h4>
+                        <p><strong>Meeting Link:</strong> <a href="{{ consultation.meeting_link }}" target="_blank">{{ consultation.meeting_link }}</a></p>
+                        <p><strong>Link Sent:</strong> {% if consultation.meeting_link_sent %}Yes{% else %}No{% endif %}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Service-specific Information -->
+                    {% if consultation.tax_year or consultation.financial_year or consultation.company_name %}
+                    <div class="mb-4">
+                        <h4 class="text-primary">Service Details</h4>
+                        {% if consultation.tax_year %}
+                            <p><strong>Tax Year:</strong> {{ consultation.tax_year }}</p>
+                        {% endif %}
+                        {% if consultation.financial_year %}
+                            <p><strong>Financial Year:</strong> {{ consultation.financial_year }}</p>
+                        {% endif %}
+                        {% if consultation.company_name %}
+                            <p><strong>Company Name:</strong> {{ consultation.company_name }}</p>
+                        {% endif %}
+                        {% if consultation.gst_number %}
+                            <p><strong>GST Number:</strong> {{ consultation.gst_number }}</p>
+                        {% endif %}
+                        {% if consultation.pan_number %}
+                            <p><strong>PAN Number:</strong> {{ consultation.pan_number }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Documents -->
+                    {% if consultation.supporting_documents or consultation.additional_documents %}
+                    <div class="mb-4">
+                        <h4 class="text-primary">Documents</h4>
+                        {% if consultation.supporting_documents %}
+                            <p><strong>Supporting Documents:</strong> <a href="{{ consultation.supporting_documents.url }}" target="_blank">View Document</a></p>
+                        {% endif %}
+                        {% if consultation.additional_documents %}
+                            <p><strong>Additional Documents:</strong> <a href="{{ consultation.additional_documents.url }}" target="_blank">View Document</a></p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Notes -->
+                    {% if consultation.notes %}
+                    <div class="mb-4">
+                        <h4 class="text-primary">Notes</h4>
+                        <p>{{ consultation.notes }}</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Timeline -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Timeline</h4>
+                        <div class="timeline">
+                            <div class="timeline-item">
+                                <div class="timeline-date">{{ consultation.created_at|date:"M d, Y H:i" }}</div>
+                                <div class="timeline-content">
+                                    <h6>Consultation Created</h6>
+                                    <p>Initial consultation request submitted</p>
+                                </div>
+                            </div>
+                            {% if consultation.payment_status %}
+                            <div class="timeline-item">
+                                <div class="timeline-date">{{ consultation.updated_at|date:"M d, Y H:i" }}</div>
+                                <div class="timeline-content">
+                                    <h6>Payment Confirmed</h6>
+                                    <p>Payment has been received and confirmed</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if consultation.meeting_link %}
+                            <div class="timeline-item">
+                                <div class="timeline-date">{{ consultation.updated_at|date:"M d, Y H:i" }}</div>
+                                <div class="timeline-content">
+                                    <h6>Meeting Link Generated</h6>
+                                    <p>Virtual meeting link has been created</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="text-center mt-4">
+                        {% if consultation.status == 'pending' %}
+                            <a href="{% url 'core:payment' consultation.id %}" class="btn btn-primary">
+                                <i class="fas fa-credit-card"></i> Make Payment
+                            </a>
+                        {% endif %}
+                        {% if consultation.status == 'confirmed' and consultation.mode == 'virtual' and not consultation.meeting_link %}
+                            <a href="{% url 'core:generate_meeting_link' consultation.id %}" class="btn btn-info">
+                                <i class="fas fa-video"></i> Generate Meeting Link
+                            </a>
+                        {% endif %}
+                        {% if consultation.status == 'completed' and not consultation.feedback %}
+                            <a href="{% url 'core:submit_feedback' consultation.id %}" class="btn btn-success">
+                                <i class="fas fa-star"></i> Submit Feedback
+                            </a>
+                        {% endif %}
+                        <a href="{% url 'core:my_consultations' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Consultations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.timeline {
+    position: relative;
+    padding: 20px 0;
+}
+
+.timeline-item {
+    position: relative;
+    padding-left: 50px;
+    margin-bottom: 20px;
+}
+
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #e9ecef;
+}
+
+.timeline-item:last-child:before {
+    bottom: 50%;
+}
+
+.timeline-item:after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 0;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #007bff;
+    border: 2px solid #fff;
+}
+
+.timeline-date {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.timeline-content {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.timeline-content h6 {
+    margin-bottom: 5px;
+    color: #343a40;
+}
+
+.timeline-content p {
+    margin-bottom: 0;
+    color: #6c757d;
+}
+</style>
+{% endblock %} 

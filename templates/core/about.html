@@ -1,0 +1,363 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero-section {
+        padding: 5rem 0;
+        background: var(--light-color);
+    }
+
+    .about-hero-section h1 {
+        color: var(--primary-color);
+        font-weight: 700;
+        animation: fadeInUp 0.8s ease forwards;
+    }
+    
+    .about-hero-section p {
+        color: var(--text-color);
+        font-size: 1.1rem;
+        line-height: 1.7;
+        animation: fadeInUp 0.8s ease 0.2s forwards;
+        opacity: 0;
+    }
+
+    .hero-icon {
+        font-size: 4rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        animation: fadeIn 1s ease 0.4s forwards;
+        opacity: 0;
+    }
+
+    .section-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 3rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+        text-align: center;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background-color: var(--secondary-color);
+        border-radius: 2px;
+    }
+
+    .our-story, .mission-vision, .our-values, .team-section {
+        padding: 5rem 0;
+        background: white;
+    }
+    
+    .mission-vision, .team-section {
+        background: var(--light-color);
+    }
+
+    .story-icon {
+        font-size: 3.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .our-story p {
+        font-size: 1.05rem;
+        line-height: 1.8;
+        color: #555;
+    }
+
+    .card {
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        background: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        height: 100%;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    }
+    
+    .card-icon {
+        font-size: 2.5rem;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
+    
+    .card-body {
+        padding: 1.75rem;
+    }
+    
+    .card-title {
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 0.75rem;
+    }
+    
+    .mission-vision .card-title {
+         color: var(--secondary-color);
+    }
+
+    .value-card .card-body,
+    .team-card .card-body {
+        text-align: center;
+    }
+    
+    .value-card .card-title {
+         color: var(--text-color);
+    }
+
+    .team-card .card-icon {
+        font-size: 3rem;
+        color: var(--secondary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .team-card .card-title {
+         font-size: 1.3rem;
+         color: var(--text-color);
+    }
+    
+    .team-card .card-text {
+         color: var(--secondary-color);
+         font-weight: 500;
+         margin-bottom: 1rem;
+    }
+    
+    .social-links a {
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        color: var(--text-color);
+        margin: 0 0.3rem;
+    }
+
+    .social-links a:hover {
+        color: var(--primary-color);
+        transform: scale(1.2);
+    }
+    
+    .cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    
+    .cta-section h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+         margin-bottom: 2rem;
+    }
+    
+    .cta-section .btn-light {
+         background-color: white;
+         color: var(--primary-color);
+         font-weight: 600;
+         padding: 0.8rem 2rem;
+         border-radius: 30px;
+         transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-light:hover {
+         background-color: var(--light-color);
+         transform: translateY(-3px) scale(1.03);
+         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Animation for sections */
+    .our-story, .mission-vision, .our-values, .team-section {
+        opacity: 0;
+        animation: fadeIn 1s ease forwards;
+    }
+
+    .our-story {
+        animation-delay: 0.2s;
+    }
+    .mission-vision {
+        animation-delay: 0.4s;
+    }
+    .our-values {
+        animation-delay: 0.6s;
+    }
+    .team-section {
+        animation-delay: 0.8s;
+    }
+    
+    @media (max-width: 991px) {
+        .about-hero-section .row {
+             flex-direction: column-reverse; /* Stack image above text */
+             text-align: center;
+        }
+        .about-hero-section img {
+             margin-bottom: 2rem;
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .about-hero-section, .our-story, .mission-vision, .our-values, .team-section {
+             padding: 3rem 0;
+        }
+        .section-title {
+             margin-bottom: 2rem;
+        }
+        .our-story .col-lg-6:last-child {
+             margin-top: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="about-hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1>About Costsecon Accounting Inc</h1>
+                <p>We are a team of dedicated professionals committed to providing exceptional accounting and financial services to businesses of all sizes.</p>
+            </div>
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-building hero-icon"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Story Section -->
+<section class="our-story">
+    <div class="container">
+        <h2 class="section-title">Our Story</h2>
+        <div class="row align-items-center">
+            <div class="col-lg-6 text-center">
+                <i class="fas fa-history story-icon"></i>
+            </div>
+            <div class="col-lg-6">
+                <p>Founded in 2020, Costsecon Accounting Inc has grown from a small local firm to a trusted name in the accounting industry. Our journey has been marked by a commitment to excellence and a passion for helping businesses succeed.</p>
+                <p>We believe in building long-term relationships with our clients, understanding their unique needs, and providing tailored solutions that drive growth and success.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Mission & Vision Section -->
+<section class="mission-vision">
+    <div class="container">
+        <h2 class="section-title">Our Mission & Vision</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <i class="fas fa-bullseye card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Our Mission</h3>
+                        <p class="card-text">To provide exceptional accounting services that help businesses thrive in an ever-changing financial landscape.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card">
+                    <i class="fas fa-eye card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Our Vision</h3>
+                        <p class="card-text">To be the most trusted accounting partner for businesses, known for our expertise, integrity, and commitment to client success.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Our Values Section -->
+<section class="our-values">
+    <div class="container">
+        <h2 class="section-title">Our Values</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="card value-card">
+                    <i class="fas fa-handshake card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Integrity</h3>
+                        <p class="card-text">We uphold the highest standards of honesty and ethical conduct in all our dealings.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card value-card">
+                    <i class="fas fa-lightbulb card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Innovation</h3>
+                        <p class="card-text">We continuously seek new ways to improve our services and deliver better results.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="card value-card">
+                    <i class="fas fa-users card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Collaboration</h3>
+                        <p class="card-text">We work closely with our clients to understand their needs and achieve their goals.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <h2 class="section-title">Our Team</h2>
+        <div class="row">
+            <div class="col-md-6 mb-6">
+                <div class="card team-card">
+                    <i class="fas fa-user-tie card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Gaurav Nikhanj</h3>
+                        <p class="card-text">Founder & CEO</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-6">
+                <div class="card team-card">
+                    <i class="fas fa-user-tie card-icon"></i>
+                    <div class="card-body">
+                        <h3 class="card-title">Shiv Kumar Singh</h3>
+                        <p class="card-text">Senior Developer</p>
+                        <div class="social-links">
+                            <a href="#"><i class="fab fa-linkedin"></i></a>
+                            <a href="#"><i class="fab fa-twitter"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container text-center">
+        <h2>Ready to Get Started?</h2>
+        <p>Contact us today to learn how we can help your business succeed.</p>
+        <a href="{% url 'core:contact' %}" class="btn btn-light">Contact Us</a>
+    </div>
+</section>
+{% endblock %} 

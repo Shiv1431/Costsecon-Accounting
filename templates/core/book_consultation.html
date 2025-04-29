@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Consultation - {{ service.name }} - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .booking-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .booking-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .booking-header h1 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .booking-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .document-upload {
+        border: 2px dashed #ddd;
+        padding: 1.5rem;
+        text-align: center;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .document-upload:hover {
+        border-color: var(--primary-color);
+    }
+
+    .document-upload i {
+        font-size: 2rem;
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .document-info {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        border-radius: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="booking-container">
+    <div class="booking-header">
+        <h1>Book {{ service.name }}</h1>
+        <p class="lead">Please fill in the details below to book your consultation</p>
+    </div>
+
+    <div class="booking-form">
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label for="{{ form.date.id_for_label }}">Date</label>
+                {{ form.date }}
+                {% if form.date.errors %}
+                <div class="text-danger">{{ form.date.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.time.id_for_label }}">Time</label>
+                {{ form.time }}
+                {% if form.time.errors %}
+                <div class="text-danger">{{ form.time.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.mode.id_for_label }}">Consultation Mode</label>
+                {{ form.mode }}
+                {% if form.mode.errors %}
+                <div class="text-danger">{{ form.mode.errors }}</div>
+                {% endif %}
+            </div>
+
+            {% for field in form %}
+                {% if field.name not in 'date,time,mode,notes,supporting_documents,additional_documents' %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="form-group">
+                <label for="{{ form.notes.id_for_label }}">Additional Notes</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}
+                <div class="text-danger">{{ form.notes.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Supporting Documents</label>
+                <div class="document-upload">
+                    <i class="bi bi-file-earmark-arrow-up"></i>
+                    <p>Upload relevant documents to help us understand your requirements better</p>
+                    {{ form.supporting_documents }}
+                    <div class="document-info">
+                        Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG<br>
+                        Maximum file size: 10MB
+                    </div>
+                </div>
+                {% if form.supporting_documents.errors %}
+                <div class="text-danger">{{ form.supporting_documents.errors }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label>Additional Documents (Optional)</label>
+                <div class="document-upload">
+                    <i class="bi bi-file-earmark-plus"></i>
+                    <p>Upload any additional documents that might be helpful</p>
+                    {{ form.additional_documents }}
+                    <div class="document-info">
+                        Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG<br>
+                        Maximum file size: 10MB
+                    </div>
+                </div>
+                {% if form.additional_documents.errors %}
+                <div class="text-danger">{{ form.additional_documents.errors }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-submit">Proceed to Payment</button>
+        </form>
+    </div>
+</div>
+{% endblock %} 

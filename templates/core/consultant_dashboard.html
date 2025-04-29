@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultant Dashboard - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <!-- High Priority Consultations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">High Priority Consultations</h4>
+                </div>
+                <div class="card-body">
+                    {% if high_priority %}
+                        <div class="list-group">
+                            {% for consultation in high_priority %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ consultation.service.name }}</h5>
+                                    <small class="text-muted">{{ consultation.date|date:"F d, Y" }} at {{ consultation.time|time:"g:i A" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <span class="badge bg-danger">High Priority</span>
+                                    <span class="badge {% if consultation.ai_sentiment == 'positive' %}bg-success
+                                                      {% elif consultation.ai_sentiment == 'negative' %}bg-danger
+                                                      {% else %}bg-secondary{% endif %}">
+                                        {{ consultation.ai_sentiment|title }} Sentiment
+                                    </span>
+                                </p>
+                                <div class="mt-2">
+                                    <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'core:consultation_insights' consultation.id %}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-brain"></i> AI Insights
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No high priority consultations.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- All Consultations -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">All Consultations</h4>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="list-group">
+                            {% for consultation in consultations %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ consultation.service.name }}</h5>
+                                    <small class="text-muted">{{ consultation.date|date:"F d, Y" }} at {{ consultation.time|time:"g:i A" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <span class="badge {% if consultation.status == 'confirmed' %}bg-success
+                                                      {% elif consultation.status == 'pending' %}bg-warning
+                                                      {% else %}bg-info{% endif %}">
+                                        {{ consultation.get_status_display }}
+                                    </span>
+                                    {% if consultation.ai_priority %}
+                                    <span class="badge {% if consultation.ai_priority == 'high' %}bg-danger
+                                                      {% elif consultation.ai_priority == 'medium' %}bg-warning
+                                                      {% else %}bg-success{% endif %}">
+                                        Priority: {{ consultation.ai_priority|title }}
+                                    </span>
+                                    {% endif %}
+                                </p>
+                                <div class="mt-2">
+                                    <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-sm btn-outline-primary">
+                                        View Details
+                                    </a>
+                                    <a href="{% url 'core:consultation_insights' consultation.id %}" class="btn btn-sm btn-outline-info">
+                                        <i class="fas fa-brain"></i> AI Insights
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No consultations assigned.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Recent Document Analyses -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Recent Document Analyses</h4>
+                </div>
+                <div class="card-body">
+                    {% if recent_analyses %}
+                        <div class="list-group">
+                            {% for analysis in recent_analyses %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h6 class="mb-1">{{ analysis.consultation.service.name }}</h6>
+                                    <small class="text-muted">{{ analysis.created_at|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1">
+                                    <span class="badge bg-info">Document Analysis</span>
+                                </p>
+                                <div class="mt-2">
+                                    <a href="{% url 'core:consultation_insights' analysis.consultation.id %}" class="btn btn-sm btn-outline-info">
+                                        View Analysis
+                                    </a>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No recent document analyses.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Quick Actions</h4>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'core:my_consultations' %}" class="btn btn-outline-primary">
+                            <i class="fas fa-calendar"></i> All Consultations
+                        </a>
+                        <a href="{% url 'core:service_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-list"></i> Services
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.list-group-item {
+    transition: background-color 0.2s;
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa;
+}
+
+.badge {
+    font-size: 0.8rem;
+    padding: 0.35em 0.65em;
+}
+</style>
+{% endblock %} 

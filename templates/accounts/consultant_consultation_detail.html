@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultation Details - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Consultation Details</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Client Information -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Client Information</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Name:</strong> {{ consultation.user.get_full_name }}</p>
+                                <p><strong>Email:</strong> {{ consultation.user.email }}</p>
+                                <p><strong>Phone:</strong> {{ consultation.user.userprofile.phone_number }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Service:</strong> {{ consultation.service.name }}</p>
+                                <p><strong>Date:</strong> {{ consultation.date|date:"F d, Y" }}</p>
+                                <p><strong>Time:</strong> {{ consultation.formatted_time }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Consultation Status -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Consultation Status</h4>
+                        <form method="post" class="mb-3">
+                            {% csrf_token %}
+                            <div class="row align-items-center">
+                                <div class="col-md-6">
+                                    <select name="status" class="form-select">
+                                        {% for status_value, status_label in consultation.STATUS_CHOICES %}
+                                            <option value="{{ status_value }}" {% if consultation.status == status_value %}selected{% endif %}>
+                                                {{ status_label }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" name="update_status" class="btn btn-primary">
+                                        Update Status
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    
+                    <!-- Documents -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Documents</h4>
+                        {% if documents %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Type</th>
+                                            <th>Uploaded By</th>
+                                            <th>Date</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for document in documents %}
+                                            <tr>
+                                                <td>{{ document.name }}</td>
+                                                <td>{{ document.get_document_type_display }}</td>
+                                                <td>{{ document.uploaded_by.get_full_name }}</td>
+                                                <td>{{ document.created_at|date:"F d, Y" }}</td>
+                                                <td>
+                                                    <a href="{{ document.file_url }}" class="btn btn-sm btn-info" target="_blank">
+                                                        <i class="fas fa-download"></i> Download
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No documents uploaded yet.</p>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Notes -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Notes</h4>
+                        <p class="text-muted">{{ consultation.notes|default:"No notes available." }}</p>
+                    </div>
+                    
+                    <!-- Meeting Link -->
+                    {% if consultation.meeting_link %}
+                        <div class="mb-4">
+                            <h4 class="text-primary">Meeting Link</h4>
+                            <p>
+                                <a href="{{ consultation.meeting_link }}" class="btn btn-primary" target="_blank">
+                                    <i class="fas fa-video"></i> Join Meeting
+                                </a>
+                            </p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Consultant - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Edit Consultant</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="row g-3">
+                        {% csrf_token %}
+                        <div class="col-md-6">
+                            {{ form.name|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.email|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.phone_number|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.specialization|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.experience_years|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.hourly_rate|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            {{ form.bio|as_crispy_field }}
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                            <a href="{% url 'accounts:manage_consultants' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

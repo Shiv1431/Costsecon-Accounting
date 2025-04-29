@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Payment - {{ consultation.service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="mb-0">Payment Details</h3>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Consultation Details</h5>
+                        <p><strong>Service:</strong> {{ consultation.service.name }}</p>
+                        <p><strong>Date:</strong> {{ consultation.date }}</p>
+                        <p><strong>Time:</strong> {{ consultation.time }}</p>
+                        <p><strong>Mode:</strong> {{ consultation.get_mode_display }}</p>
+                        <p><strong>Amount:</strong> ₹{{ consultation.payment_amount }}</p>
+                    </div>
+
+                    {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form id="payment-form">
+                        {% csrf_token %}
+                        <button type="button" id="rzp-button" class="btn btn-primary btn-lg btn-block">
+                            Pay Now
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+document.getElementById('rzp-button').onclick = function(e) {
+    e.preventDefault();
+    
+    const options = {
+        key: '{{ key_id }}',
+        amount: {{ amount }},
+        currency: '{{ currency }}',
+        name: 'Costsecon Accounting',
+        description: '{{ consultation.service.name }}',
+        order_id: '{{ order_id }}',
+        handler: function(response) {
+            // Verify payment
+            fetch("{% url 'core:verify_payment' consultation.id %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    razorpay_payment_id: response.razorpay_payment_id,
+                    razorpay_order_id: response.razorpay_order_id,
+                    razorpay_signature: response.razorpay_signature
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = data.redirect_url;
+                } else {
+                    alert('Payment verification failed: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred during payment verification. Please try again.');
+            });
+        },
+        prefill: {
+            name: '{{ user.get_full_name }}',
+            email: '{{ user.email }}'
+        },
+        theme: {
+            color: '#007bff'
+        }
+    };
+    
+    const rzp = new Razorpay(options);
+    rzp.open();
+};
+</script>
+{% endblock %} 

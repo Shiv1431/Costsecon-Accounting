@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Profile - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">My Profile</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{% url 'core:update_profile' %}">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" class="form-control" name="name" value="{{ user.get_full_name|default:user.username }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" value="{{ user.email }}" readonly>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Consultation Insights</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Average Duration</h5>
+                                    <p class="display-6">{{ avg_duration|floatformat:0 }} min</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Popular Service</h5>
+                                    <p class="display-6">{{ popular_service|default:"N/A" }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h5>Monthly Frequency</h5>
+                                    <p class="display-6">{{ consultation_frequency|floatformat:1 }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">My Consultations</h4>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Service</th>
+                                        <th>Date</th>
+                                        <th>Time</th>
+                                        <th>Mode</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in consultations %}
+                                        <tr>
+                                            <td>{{ consultation.service.name }}</td>
+                                            <td>{{ consultation.date }}</td>
+                                            <td>{{ consultation.time }}</td>
+                                            <td>{{ consultation.mode }}</td>
+                                            <td>
+                                                <span class="badge {% if consultation.status == 'pending' %}bg-warning{% elif consultation.status == 'confirmed' %}bg-success{% else %}bg-danger{% endif %}">
+                                                    {{ consultation.status|title }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-sm btn-info">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                {% if consultation.status == 'completed' and not consultation.feedback %}
+                                                    <a href="{% url 'core:submit_feedback' consultation.id %}" class="btn btn-sm btn-success">
+                                                        <i class="fas fa-comment"></i> Feedback
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-center">No consultations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Consultation Insights - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">AI-Powered Insights</h2>
+                </div>
+                <div class="card-body">
+                    <!-- AI Analysis Summary -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Analysis Summary</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Priority:</strong> 
+                                    <span class="badge {% if consultation.ai_priority == 'high' %}bg-danger
+                                                      {% elif consultation.ai_priority == 'medium' %}bg-warning
+                                                      {% else %}bg-success{% endif %}">
+                                        {{ consultation.ai_priority|title }}
+                                    </span>
+                                </p>
+                                <p><strong>Sentiment:</strong> 
+                                    <span class="badge {% if consultation.ai_sentiment == 'positive' %}bg-success
+                                                      {% elif consultation.ai_sentiment == 'negative' %}bg-danger
+                                                      {% else %}bg-secondary{% endif %}">
+                                        {{ consultation.ai_sentiment|title }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                {% if consultation.ai_keywords %}
+                                <p><strong>Key Topics:</strong></p>
+                                <div class="keyword-container">
+                                    {% for keyword in consultation.ai_keywords %}
+                                    <span class="badge bg-info me-1 mb-1">{{ keyword }}</span>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AI Analysis Details -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Detailed Analysis</h4>
+                        <div class="analysis-content">
+                            {{ consultation.ai_analysis|linebreaks }}
+                        </div>
+                    </div>
+
+                    <!-- Document Analysis -->
+                    {% if consultation.supporting_documents or consultation.additional_documents %}
+                    <div class="mb-4">
+                        <h4 class="text-primary">Document Analysis</h4>
+                        {% if consultation.supporting_documents %}
+                        <div class="document-analysis mb-3">
+                            <h5>Supporting Documents</h5>
+                            <p><strong>File:</strong> <a href="{{ consultation.supporting_documents.url }}" target="_blank">View Document</a></p>
+                            {% for analysis in analyses %}
+                                {% if analysis.analysis_type == 'document' and analysis.metadata.file_type == consultation.supporting_documents.name.split('.')[-1] %}
+                                <div class="analysis-details">
+                                    <pre>{{ analysis.content|safe }}</pre>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        {% if consultation.additional_documents %}
+                        <div class="document-analysis">
+                            <h5>Additional Documents</h5>
+                            <p><strong>File:</strong> <a href="{{ consultation.additional_documents.url }}" target="_blank">View Document</a></p>
+                            {% for analysis in analyses %}
+                                {% if analysis.analysis_type == 'document' and analysis.metadata.file_type == consultation.additional_documents.name.split('.')[-1] %}
+                                <div class="analysis-details">
+                                    <pre>{{ analysis.content|safe }}</pre>
+                                </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Actions -->
+                    <div class="text-center mt-4">
+                        <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Back to Consultation
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.keyword-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.analysis-content {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    white-space: pre-wrap;
+}
+
+.document-analysis {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-radius: 0.25rem;
+    margin-bottom: 1rem;
+}
+
+.analysis-details {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background-color: #fff;
+    border-radius: 0.25rem;
+    border: 1px solid #dee2e6;
+}
+
+.analysis-details pre {
+    margin: 0;
+    white-space: pre-wrap;
+    font-size: 0.875rem;
+}
+</style>
+{% endblock %} 

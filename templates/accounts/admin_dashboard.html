@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <div class="row">
+        <!-- Pending Approvals Section -->
+        <div class="col-md-12 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Pending Approvals</h4>
+                </div>
+                <div class="card-body">
+                    {% if pending_users %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>User Type</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for profile in pending_users %}
+                                    <tr>
+                                        <td>{{ profile.user.get_full_name }}</td>
+                                        <td>{{ profile.user.email }}</td>
+                                        <td>{{ profile.user_type|title }}</td>
+                                        <td>
+                                            <form method="post" class="d-inline" action="{% url 'accounts:approve_user' profile.user.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                            </form>
+                                            <form method="post" class="d-inline" action="{% url 'accounts:reject_user' profile.user.id %}">
+                                                {% csrf_token %}
+                                                <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No pending approvals.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultants Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Consultants</h4>
+                </div>
+                <div class="card-body">
+                    {% if consultants %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Specialization</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultant in consultants %}
+                                    <tr>
+                                        <td>{{ consultant.user_profile.user.get_full_name }}</td>
+                                        <td>{{ consultant.specialization }}</td>
+                                        <td>
+                                            {% if consultant.is_available %}
+                                                <span class="badge bg-success">Available</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Busy</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No consultants registered.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Consultations Section -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">Recent Consultations</h4>
+                </div>
+                <div class="card-body">
+                    {% if consultations %}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                        <th>Consultant</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for consultation in consultations %}
+                                    <tr>
+                                        <td>{{ consultation.user.get_full_name }}</td>
+                                        <td>
+                                            <span class="badge bg-{{ consultation.status|lower }}">
+                                                {{ consultation.status|title }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {% if consultation.consultant %}
+                                                {{ consultation.consultant.user_profile.user.get_full_name }}
+                                            {% else %}
+                                                <span class="text-muted">Not assigned</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if not consultation.consultant %}
+                                                <button type="button" class="btn btn-primary btn-sm" 
+                                                        data-bs-toggle="modal" 
+                                                        data-bs-target="#assignModal{{ consultation.id }}">
+                                                    Assign Consultant
+                                                </button>
+                                            {% endif %}
+                                            <a href="{% url 'core:consultation_detail' consultation.id %}" 
+                                               class="btn btn-info btn-sm">View Details</a>
+                                        </td>
+                                    </tr>
+
+                                    <!-- Assign Consultant Modal -->
+                                    <div class="modal fade" id="assignModal{{ consultation.id }}" tabindex="-1">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">Assign Consultant</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form method="post" action="{% url 'accounts:assign_consultant' consultation.id %}">
+                                                    {% csrf_token %}
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            <label for="consultant_id" class="form-label">Select Consultant</label>
+                                                            <select name="consultant_id" id="consultant_id" class="form-select" required>
+                                                                <option value="">Choose a consultant...</option>
+                                                                {% for consultant in consultants %}
+                                                                    {% if consultant.is_available %}
+                                                                        <option value="{{ consultant.id }}">
+                                                                            {{ consultant.user_profile.user.get_full_name }} - 
+                                                                            {{ consultant.specialization }}
+                                                                        </option>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Assign</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <p class="text-muted">No consultations found.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

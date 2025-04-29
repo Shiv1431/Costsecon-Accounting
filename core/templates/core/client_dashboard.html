@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Client Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Welcome, {{ user.get_full_name }}</h2>
+    
+    <!-- Consultation Summary -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Upcoming Consultations</h5>
+                    <h2 class="card-text">{{ upcoming_consultations_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Payments</h5>
+                    <h2 class="card-text">{{ pending_consultations_count }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Completed Consultations</h5>
+                    <h2 class="card-text">{{ completed_consultations_count }}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upcoming Consultations -->
+    {% if upcoming_consultations %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Upcoming Consultations</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for consultation in upcoming_consultations %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ consultation.service.name }}</h5>
+                            <p class="card-text">
+                                <strong>Date:</strong> {{ consultation.date }}<br>
+                                <strong>Time:</strong> {{ consultation.time }}<br>
+                                <strong>Mode:</strong> {{ consultation.get_mode_display }}<br>
+                                <strong>Payment Status:</strong> 
+                                {% if consultation.payment_status %}
+                                <span class="text-success">Paid</span>
+                                {% else %}
+                                <span class="text-danger">Pending</span>
+                                {% endif %}
+                            </p>
+                            {% if consultation.meeting_link %}
+                            <a href="{{ consultation.meeting_link }}" target="_blank" class="btn btn-primary">Join Meeting</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Pending Payments -->
+    {% if pending_consultations %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4 class="mb-0">Pending Payments</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for consultation in pending_consultations %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ consultation.service.name }}</h5>
+                            <p class="card-text">
+                                <strong>Date:</strong> {{ consultation.date }}<br>
+                                <strong>Time:</strong> {{ consultation.time }}<br>
+                                <strong>Amount:</strong> ₹{{ consultation.payment_amount }}<br>
+                                <strong>Status:</strong> <span class="text-warning">Payment Pending</span>
+                            </p>
+                            <a href="{% url 'core:payment' consultation.id %}" class="btn btn-warning">Make Payment</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Recent Documents -->
+    {% if recent_documents %}
+    <div class="card">
+        <div class="card-header">
+            <h4 class="mb-0">Recent Documents</h4>
+        </div>
+        <div class="card-body">
+            <div class="list-group">
+                {% for document in recent_documents %}
+                <a href="{{ document.file.url }}" class="list-group-item list-group-item-action" target="_blank">
+                    {{ document.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

@@ -1,0 +1,352 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        padding: 5rem 0 3rem;
+        background: white;
+    }
+
+    .hero-section h1 {
+        font-weight: 700;
+        color: var(--text-color);
+        margin-bottom: 1rem;
+        animation: fadeInUp 0.8s ease forwards;
+    }
+
+    .hero-section p.lead {
+        color: #555;
+        max-width: 800px;
+        margin: 0 auto 2rem;
+        font-size: 1.15rem;
+        animation: fadeInUp 0.8s ease 0.2s forwards;
+        opacity: 0; /* Start hidden for animation */
+    }
+    
+    .hero-section .btn-primary {
+         background: var(--primary-color);
+         border-color: var(--primary-color);
+         padding: 0.8rem 2rem;
+         font-size: 1.1rem;
+         transition: all 0.3s ease;
+    }
+    
+    .hero-section .btn-primary:hover {
+         background: #AF601A; /* Darker orange */
+         border-color: #AF601A;
+         transform: translateY(-3px) scale(1.03);
+         box-shadow: 0 5px 15px rgba(230, 126, 34, 0.3);
+    }
+    
+    .hero-section .btn-outline-primary {
+         color: var(--primary-color);
+         border-color: var(--primary-color);
+         padding: 0.8rem 2rem;
+         font-size: 1.1rem;
+         border-width: 2px;
+         transition: all 0.3s ease;
+    }
+    
+    .hero-section .btn-outline-primary:hover {
+         background: var(--primary-color);
+         color: white;
+         transform: translateY(-3px) scale(1.03);
+         box-shadow: 0 5px 15px rgba(230, 126, 34, 0.2);
+    }
+
+    .hero-section .d-flex {
+        animation: fadeInUp 0.8s ease 0.4s forwards;
+        opacity: 0; /* Start hidden for animation */
+    }
+    
+    .section-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 3rem;
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background-color: var(--primary-color);
+        border-radius: 2px;
+    }
+
+    .services-preview, .why-choose-us, .about-preview {
+        padding: 5rem 0;
+        background: white;
+    }
+    
+    .services-preview {
+        background: var(--light-color);
+    }
+
+    .service-preview-card, .feature-card, .stat-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        border: 1px solid #e0e0e0;
+        text-align: center;
+    }
+
+    .service-preview-card:hover, .feature-card:hover, .stat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        border-color: var(--primary-color);
+    }
+
+    .service-icon {
+        width: 70px;
+        height: 70px;
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(155, 89, 182, 0.1); /* Light purple background */
+        border-radius: 50%;
+        transition: all 0.3s ease;
+    }
+    
+    .service-icon i {
+        font-size: 2rem; /* Larger icons */
+        color: var(--secondary-color); /* Purple icons */
+        transition: all 0.3s ease;
+    }
+    
+    .service-preview-card:hover .service-icon,
+    .feature-card:hover .service-icon,
+    .stat-card:hover .service-icon {
+        background: var(--secondary-color);
+        transform: rotate(15deg) scale(1.1);
+    }
+    
+    .service-preview-card:hover .service-icon i,
+    .feature-card:hover .service-icon i,
+    .stat-card:hover .service-icon i {
+        color: white;
+    }
+
+    .card-title {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+
+    .card-text {
+        color: #555;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    
+    .service-preview-card .btn-outline-primary {
+         color: var(--secondary-color); /* Purple outline button */
+         border-color: var(--secondary-color);
+         padding: 0.5rem 1.2rem;
+         margin-top: 1rem;
+         font-size: 0.9rem;
+    }
+    
+    .service-preview-card .btn-outline-primary:hover {
+         background: var(--secondary-color);
+         color: white;
+         transform: scale(1.05);
+    }
+    
+    .about-preview h2 {
+        text-align: left;
+    }
+    
+    .about-preview h2::after {
+         left: 0;
+         transform: translateX(0);
+    }
+    
+    .about-preview .lead {
+         font-size: 1.1rem;
+         margin-bottom: 1rem;
+    }
+    
+     .about-preview p {
+         margin-bottom: 2rem;
+     }
+     
+     .about-preview .btn-primary {
+         background: var(--secondary-color); /* Purple button */
+         border-color: var(--secondary-color);
+     }
+     
+     .about-preview .btn-primary:hover {
+         background: #7D3C98; /* Darker Purple */
+         border-color: #7D3C98;
+     }
+    
+    .stat-card h3 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.25rem;
+    }
+    
+    .stat-card p {
+        color: #777;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .cta-section {
+        padding: 5rem 0;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); /* Orange to Purple gradient */
+        color: white;
+    }
+    
+    .cta-section h2 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+         margin-bottom: 2rem;
+    }
+    
+    .cta-section .btn-light {
+         background-color: white;
+         color: var(--primary-color);
+         font-weight: 600;
+         padding: 0.8rem 2rem;
+         border-radius: 30px;
+         transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-light:hover {
+         background-color: var(--light-color);
+         transform: translateY(-3px) scale(1.03);
+         box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 5rem 0 4rem;
+        }
+        .section-title {
+             margin-bottom: 2rem;
+        }
+        .services-preview, .why-choose-us, .about-preview {
+            padding: 3rem 0;
+        }
+        .about-preview .col-lg-6:last-child {
+             margin-top: 2rem;
+        }
+        .about-preview h2 {
+             text-align: center;
+        }
+         .about-preview h2::after {
+             left: 50%;
+             transform: translateX(-50%);
+         }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-4 fw-bold mb-4 text-black animate-fade-in">Welcome to Costsecon Accounting</h1>
+                <p class="lead mb-4 text-black animate-fade-in-up">Your trusted partner for comprehensive accounting solutions.</p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <a href="{% url 'core:service_list' %}" class="btn btn-primary btn-lg px-4 gap-3">Our Services</a>
+                    <a href="{% url 'core:contact' %}" class="btn btn-outline-primary btn-lg px-4">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Preview Section -->
+<section class="services-preview py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Our Services</h2>
+        <div class="row g-4">
+            {% for service in services %}
+            <div class="col-md-4">
+                <div class="card service-card h-100">
+                    <div class="card-body">
+                        <h3 class="card-title">{{ service.name }}</h3>
+                        <p class="card-text">{{ service.description|truncatewords:20 }}</p>
+                        <a href="{% url 'core:service_detail' service.id %}" class="btn btn-outline-primary">Learn More</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'core:service_list' %}" class="btn btn-primary">View All Services</a>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us Section -->
+<section class="why-choose-us py-5 bg-light">
+    <div class="container">
+        <h2 class="text-center mb-5">Why Choose Us</h2>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-chart-line fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Expert Guidance</h3>
+                        <p class="card-text">Our team of experienced professionals provides expert guidance for your financial needs.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-clock fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Timely Service</h3>
+                        <p class="card-text">We value your time and ensure prompt delivery of all our services.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shield-alt fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Secure & Reliable</h3>
+                        <p class="card-text">Your data security is our priority. We maintain strict confidentiality standards.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="mb-4">Ready to Get Started?</h2>
+                <p class="lead mb-4">Let us help you achieve your financial goals with our expert services.</p>
+                <a href="{% url 'core:contact' %}" class="btn btn-light btn-lg">Contact Us Today</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

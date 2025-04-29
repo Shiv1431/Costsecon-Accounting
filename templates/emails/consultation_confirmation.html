@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Costsecon Accounting Inc - Consultation Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .appointment-details {
+            background-color: white;
+            padding: 15px;
+            border-left: 4px solid #2c3e50;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Costsecon Accounting Inc</h1>
+    </div>
+    <div class="content">
+        <h2>Dear {{ consultation.user.get_full_name }},</h2>
+        
+        <p>We are pleased to confirm your consultation appointment with Costsecon Accounting Inc. Your request has been successfully processed, and we look forward to assisting you with your financial needs.</p>
+        
+        <div class="appointment-details">
+            <h3>Appointment Details</h3>
+            <p><strong>Service:</strong> {{ consultation.service.name }}</p>
+            <p><strong>Date:</strong> {{ consultation.date|date:"F d, Y" }}</p>
+            <p><strong>Time:</strong> {{ consultation.formatted_time }}</p>
+            <p><strong>Mode:</strong> {{ consultation.get_mode_display }}</p>
+            {% if consultation.mode == 'virtual' %}
+            <p><strong>Meeting Link:</strong> <a href="{{ consultation.meeting_link }}">Join Meeting</a></p>
+            {% endif %}
+        </div>
+        
+        <h3>Important Information</h3>
+        <ul>
+            <li>Please arrive 5 minutes before your scheduled time</li>
+            <li>Bring any relevant documents or information related to your consultation</li>
+            <li>For virtual consultations, ensure you have a stable internet connection</li>
+        </ul>
+        
+        <p>If you need to reschedule or cancel your appointment, please do so at least 24 hours in advance by contacting our support team.</p>
+        
+        <p>For any questions or concerns, please contact our customer support team:</p>
+        <p>Phone: +91-9260932028<br>
+        Email: shivsingh1309@gmail.com</p>
+        
+        <p>We look forward to serving you and helping you achieve your financial goals.</p>
+        
+        <p>Best regards,<br>
+        <strong>Appointment Scheduling Team</strong><br>
+        Costsecon Accounting Inc</p>
+    </div>
+    <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+        <p>© 2025 Costsecon Accounting Inc. All rights reserved.</p>
+    </div>
+</body>
+</html> 

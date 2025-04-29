@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Submit Feedback - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Submit Feedback</h2>
+                </div>
+                <div class="card-body">
+                    <!-- Consultation Details -->
+                    <div class="mb-4">
+                        <h4 class="text-primary">Consultation Details</h4>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong>Service:</strong> {{ consultation.service.name }}</p>
+                                <p><strong>Date:</strong> {{ consultation.date|date:"F d, Y" }}</p>
+                                <p><strong>Time:</strong> {{ consultation.formatted_time }}</p>
+                            </div>
+                            <div class="col-md-6">
+                                <p><strong>Mode:</strong> {{ consultation.get_mode_display }}</p>
+                                <p><strong>Status:</strong> {{ consultation.get_status_display }}</p>
+                                {% if consultation.consultant %}
+                                    <p><strong>Consultant:</strong> {{ consultation.consultant.full_name }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Feedback Form -->
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <!-- Service Rating -->
+                        <div class="mb-4">
+                            <h4 class="text-primary">Service Rating</h4>
+                            <div class="rating">
+                                {% for i in "54321" %}
+                                    <input type="radio" name="service_rating" value="{{ i }}" id="service_rating_{{ i }}" required>
+                                    <label for="service_rating_{{ i }}">★</label>
+                                {% endfor %}
+                            </div>
+                            {{ form.service_comment|as_crispy_field }}
+                        </div>
+
+                        {% if consultation.consultant %}
+                            <!-- Consultant Rating -->
+                            <div class="mb-4">
+                                <h4 class="text-primary">Consultant Rating</h4>
+                                <div class="rating">
+                                    {% for i in "54321" %}
+                                        <input type="radio" name="consultant_rating" value="{{ i }}" id="consultant_rating_{{ i }}">
+                                        <label for="consultant_rating_{{ i }}">★</label>
+                                    {% endfor %}
+                                </div>
+                                {{ form.consultant_comment|as_crispy_field }}
+                            </div>
+                        {% endif %}
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Submit Feedback
+                            </button>
+                            <a href="{% url 'core:my_consultations' %}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Cancel
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_css %}
+<style>
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 2rem;
+    color: #ddd;
+    padding: 0 0.1em;
+    transition: color 0.2s ease-in-out;
+}
+
+.rating input:checked ~ label,
+.rating label:hover,
+.rating label:hover ~ label {
+    color: #ffd700;
+}
+
+.rating input:checked + label:hover,
+.rating input:checked + label:hover ~ label,
+.rating input:checked ~ label:hover,
+.rating input:checked ~ label:hover ~ label,
+.rating label:hover ~ input:checked ~ label {
+    color: #ffd700;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    });
+});
+</script>
+{% endblock %}
+{% endblock %} 

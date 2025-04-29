@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Scheduling - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">AI-Powered Smart Scheduling</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card mb-4">
+                                <div class="card-body">
+                                    <h5 class="card-title">Your Consultation History</h5>
+                                    <div class="table-responsive">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Date</th>
+                                                    <th>Time</th>
+                                                    <th>Service</th>
+                                                    <th>Status</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="consultationHistory">
+                                                <!-- History will be populated by JavaScript -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Recommended Time Slots</h5>
+                                    <div id="recommendations">
+                                        <p class="text-muted">Loading recommendations...</p>
+                                    </div>
+                                    <button class="btn btn-primary mt-3" onclick="getRecommendations()">Get New Recommendations</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getRecommendations() {
+    fetch('/ai/smart-scheduling/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({})
+    })
+    .then(response => response.json())
+    .then(data => {
+        const recommendationsDiv = document.getElementById('recommendations');
+        recommendationsDiv.innerHTML = `
+            <div class="alert alert-info">
+                <h6>AI Recommendation</h6>
+                <p>Based on your consultation history and preferences, we recommend:</p>
+                <p class="h4">${data.recommended_time}</p>
+                <p class="small text-muted">This time slot has been optimized for your schedule and preferences.</p>
+            </div>
+        `;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while getting recommendations.');
+    });
+}
+
+// Load initial recommendations
+getRecommendations();
+</script>
+{% endblock %} 

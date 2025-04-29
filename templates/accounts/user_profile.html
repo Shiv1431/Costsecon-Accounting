@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Profile - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 3rem 2rem;
+        text-align: center;
+        color: white;
+        position: relative;
+    }
+
+    .profile-picture-container {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 1.5rem;
+    }
+
+    .profile-picture {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .profile-picture-edit {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--primary-color);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .profile-picture-edit:hover {
+        transform: scale(1.1);
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-email {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    .profile-content {
+        padding: 2rem;
+    }
+
+    .profile-section {
+        margin-bottom: 2rem;
+    }
+
+    .section-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--light-color);
+    }
+
+    .info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 1rem;
+        background: var(--light-color);
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .info-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    .info-icon {
+        width: 40px;
+        height: 40px;
+        background: var(--primary-color);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        color: white;
+    }
+
+    .info-content {
+        flex: 1;
+    }
+
+    .info-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-bottom: 0.2rem;
+    }
+
+    .info-value {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        font-weight: 500;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .btn {
+        padding: 0.8rem 2rem;
+        border-radius: 30px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        border: none;
+        color: white;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        border: none;
+        color: white;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 15px;
+        border: none;
+    }
+
+    .modal-header {
+        background: var(--primary-color);
+        color: white;
+        border-radius: 15px 15px 0 0;
+        border: none;
+    }
+
+    .modal-body {
+        padding: 2rem;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: var(--text-color);
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        border: 1px solid #ddd;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(42, 157, 143, 0.25);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <div class="profile-container">
+                <!-- Profile Header -->
+                <div class="profile-header">
+                    <div class="profile-picture-container">
+                        {% if user.userprofile.profile_picture %}
+                            <img src="{{ user.userprofile.profile_picture.url }}" alt="Profile Picture" class="profile-picture">
+                        {% else %}
+                            <img src="{% static 'images/default-profile.png' %}" alt="Default Profile Picture" class="profile-picture">
+                        {% endif %}
+                        <div class="profile-picture-edit" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                    </div>
+                    <h1 class="profile-name">{{ user.get_full_name }}</h1>
+                    <p class="profile-email">{{ user.email }}</p>
+                </div>
+
+                <!-- Profile Content -->
+                <div class="profile-content">
+                    <!-- Personal Information -->
+                    <div class="profile-section">
+                        <h2 class="section-title">Personal Information</h2>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Full Name</div>
+                                <div class="info-value">{{ user.get_full_name }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Email Address</div>
+                                <div class="info-value">{{ user.email }}</div>
+                            </div>
+                        </div>
+                        {% if user.userprofile.phone_number %}
+                        <div class="info-item">
+                            <div class="info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="info-content">
+                                <div class="info-label">Phone Number</div>
+                                <div class="info-value">{{ user.userprofile.phone_number }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateProfileModal">
+                            <i class="fas fa-edit"></i> Update Profile
+                        </button>
+                        <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteAccountModal">
+                            <i class="fas fa-trash"></i> Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Profile Modal -->
+<div class="modal fade" id="updateProfileModal" tabindex="-1" aria-labelledby="updateProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="updateProfileModalLabel">Update Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="first_name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" value="{{ user.first_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="last_name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" value="{{ user.last_name }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ user.email }}" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="profile_picture" class="form-label">Profile Picture</label>
+                        <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Account Modal -->
+<div class="modal fade" id="deleteAccountModal" tabindex="-1" aria-labelledby="deleteAccountModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteAccountModalLabel">Delete Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Warning:</strong> This action cannot be undone. All your data will be permanently deleted.
+                </div>
+                <form method="post" action="{% url 'accounts:delete_account' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Enter your password to confirm</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="text-center">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete Account</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

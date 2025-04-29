@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Admin Dashboard - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 2rem;
+    }
+    
+    .stats-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stats-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+    
+    .stats-icon i {
+        font-size: 1.5rem;
+        color: white;
+    }
+    
+    .stats-number {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .stats-label {
+        color: var(--text-muted);
+        font-size: 1rem;
+    }
+    
+    .recent-activity {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .activity-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .activity-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+    
+    .activity-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .activity-item {
+        padding: 1rem 0;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .activity-item:last-child {
+        border-bottom: none;
+    }
+    
+    .activity-time {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+    }
+    
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .action-button {
+        background: white;
+        border: none;
+        border-radius: 12px;
+        padding: 1rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        text-decoration: none;
+        color: var(--dark-color);
+    }
+    
+    .action-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .action-icon {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        color: var(--primary-color);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 class="mb-4">Admin Dashboard</h1>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: var(--primary-color);">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="stats-number">{{ total_clients }}</div>
+                <div class="stats-label">Total Clients</div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: var(--secondary-color);">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div class="stats-number">{{ total_consultants }}</div>
+                <div class="stats-label">Total Consultants</div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="stats-card">
+                <div class="stats-icon" style="background: #ff6b6b;">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stats-number">{{ pending_approvals }}</div>
+                <div class="stats-label">Pending Approvals</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="recent-activity">
+                <div class="activity-header">
+                    <h2 class="activity-title">Recent Consultations</h2>
+                </div>
+                <ul class="activity-list">
+                    {% for consultation in recent_consultations %}
+                    <li class="activity-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ consultation.user.get_full_name }}</strong>
+                                <div class="activity-time">{{ consultation.created_at|date:"M d, Y" }}</div>
+                            </div>
+                            <span class="badge bg-{{ consultation.status_color }}">
+                                {{ consultation.get_status_display }}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="recent-activity">
+                <div class="activity-header">
+                    <h2 class="activity-title">Recent Users</h2>
+                </div>
+                <ul class="activity-list">
+                    {% for user in recent_users %}
+                    <li class="activity-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>{{ user.get_full_name }}</strong>
+                                <div class="activity-time">{{ user.date_joined|date:"M d, Y" }}</div>
+                            </div>
+                            <span class="badge bg-{{ user.userprofile.user_type_color }}">
+                                {{ user.userprofile.get_user_type_display }}
+                            </span>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="quick-actions">
+        <a href="{% url 'accounts:manage_clients' %}" class="action-button">
+            <i class="fas fa-users action-icon"></i>
+            <div>Manage Clients</div>
+        </a>
+        
+        <a href="{% url 'accounts:manage_consultants' %}" class="action-button">
+            <i class="fas fa-user-tie action-icon"></i>
+            <div>Manage Consultants</div>
+        </a>
+        
+        <a href="{% url 'accounts:admin_profile' %}" class="action-button">
+            <i class="fas fa-user-cog action-icon"></i>
+            <div>Admin Profile</div>
+        </a>
+        
+        <a href="{% url 'accounts:test_email' %}" class="action-button">
+            <i class="fas fa-envelope action-icon"></i>
+            <div>Test Email</div>
+        </a>
+    </div>
+</div>
+{% endblock %} 

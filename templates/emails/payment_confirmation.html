@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Confirmation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .content {
+            padding: 20px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Payment Confirmation</h1>
+    </div>
+    
+    <div class="content">
+        <p>Dear {{ user.get_full_name }},</p>
+        
+        <p>Thank you for your payment. Your virtual consultation has been confirmed!</p>
+        
+        <h2>Consultation Details:</h2>
+        <ul>
+            <li><strong>Service:</strong> {{ consultation.service.name }}</li>
+            <li><strong>Date:</strong> {{ consultation.date|date:"F d, Y" }}</li>
+            <li><strong>Time:</strong> {{ consultation.time|time:"g:i A" }}</li>
+            <li><strong>Duration:</strong> {{ consultation.duration }} minutes</li>
+            <li><strong>Amount Paid:</strong> ${{ consultation.amount }}</li>
+        </ul>
+
+        {% if consultation.meeting_link %}
+        <p>Your meeting link: <a href="{{ consultation.meeting_link }}">{{ consultation.meeting_link }}</a></p>
+        <p>Please join the meeting 5 minutes before the scheduled time.</p>
+        {% endif %}
+
+        <p>If you have any questions or need to reschedule, please contact us.</p>
+        
+        <p>Best regards,<br>Your Consultation Team</p>
+    </div>
+    
+    <div class="footer">
+        <p>This is an automated message. Please do not reply to this email.</p>
+    </div>
+</body>
+</html> 

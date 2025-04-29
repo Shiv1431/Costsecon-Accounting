@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Consultations{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">My Consultations</h2>
+    
+    {% if consultations %}
+    <div class="row">
+        {% for consultation in consultations %}
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">{{ consultation.service.name }}</h5>
+                    <span class="badge {% if consultation.status == 'confirmed' %}bg-success{% elif consultation.status == 'pending' %}bg-warning{% elif consultation.status == 'completed' %}bg-info{% else %}bg-danger{% endif %}">
+                        {{ consultation.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <p><strong>Date:</strong> {{ consultation.date }}</p>
+                    <p><strong>Time:</strong> {{ consultation.time }}</p>
+                    <p><strong>Mode:</strong> {{ consultation.get_mode_display }}</p>
+                    <p><strong>Amount:</strong> ₹{{ consultation.payment_amount }}</p>
+                    <p><strong>Payment Status:</strong> 
+                        {% if consultation.payment_status %}
+                        <span class="text-success">Paid</span>
+                        {% else %}
+                        <span class="text-danger">Pending</span>
+                        {% endif %}
+                    </p>
+                    
+                    {% if consultation.meeting_link %}
+                    <p><strong>Meeting Link:</strong> <a href="{{ consultation.meeting_link }}" target="_blank">Join Meeting</a></p>
+                    {% endif %}
+                    
+                    <div class="mt-3">
+                        {% if consultation.status == 'pending' %}
+                        <a href="{% url 'core:payment' consultation.id %}" class="btn btn-primary">Make Payment</a>
+                        {% endif %}
+                        
+                        {% if consultation.status == 'confirmed' %}
+                        <a href="{% url 'core:consultation_detail' consultation.id %}" class="btn btn-info">View Details</a>
+                        {% endif %}
+                        
+                        {% if consultation.status == 'completed' and not consultation.feedback %}
+                        <a href="{% url 'core:submit_feedback' consultation.id %}" class="btn btn-success">Submit Feedback</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        You haven't booked any consultations yet. <a href="{% url 'core:service_list' %}">Browse our services</a> to get started.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

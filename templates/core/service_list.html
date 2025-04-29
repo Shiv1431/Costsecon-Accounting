@@ -1,0 +1,153 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Services - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .service-card {
+        border: none;
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        height: 100%;
+        background: white;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        margin-bottom: 2rem;
+    }
+
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+    }
+
+    .service-card .card-body {
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .service-card .card-title {
+        color: var(--primary-color);
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .service-card .card-text {
+        color: #666;
+        font-size: 1rem;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .service-card .price {
+        font-size: 1.25rem;
+        color: var(--primary-color);
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+    }
+
+    .service-card .btn {
+        padding: 0.8rem 1.5rem;
+        font-weight: 500;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .service-card .btn-outline-primary {
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+        margin-right: 1rem;
+    }
+
+    .service-card .btn-outline-primary:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    .service-card .btn-primary {
+        background: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .service-card .btn-primary:hover {
+        background: var(--secondary-color);
+        border-color: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    .service-header {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .service-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .service-header p {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+
+    .service-actions {
+        margin-top: auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Service Header -->
+<section class="service-header">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1>Our Professional Services</h1>
+                <p>Comprehensive accounting and financial solutions tailored to your needs</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services List -->
+<div class="container py-5">
+    <div class="row g-4">
+        {% for service in services %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card service-card">
+                <div class="card-body">
+                    <h3 class="card-title">{{ service.name }}</h3>
+                    <p class="card-text">{{ service.description }}</p>
+                    <p class="price">₹{{ service.price|floatformat:2 }}</p>
+                    <div class="service-actions">
+                        <a href="{% url 'core:service_detail' service.id %}" class="btn btn-outline-primary">Learn More</a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'core:book_consultation' service.id %}" class="btn btn-primary">Book Now</a>
+                        {% else %}
+                        <a href="{% url 'accounts:login' %}?next={% url 'core:service_list' %}" class="btn btn-primary">Login to Book</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p>No services available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 

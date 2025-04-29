@@ -1,0 +1,262 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ service.name }} - Costsecon Accounting Inc{% endblock %}
+
+{% block extra_css %}
+<style>
+    .document-section {
+        margin-top: 2rem;
+        padding: 2rem;
+        background: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .document-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .document-actions {
+        margin-top: 1rem;
+    }
+
+    .document-icon {
+        font-size: 2rem;
+        color: var(--primary-color);
+    }
+
+    .upload-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="service-detail-container">
+    <div class="service-detail-header">
+        <h1>{{ service.name }}</h1>
+        <p class="service-description">{{ service.description }}</p>
+    </div>
+
+    <div class="service-detail-content">
+        <div class="service-info">
+            <div class="service-meta">
+                <div class="price-info">
+                    <span class="price-label">Price:</span>
+                    <span class="price-amount">₹{{ service.price|floatformat:2 }}</span>
+                </div>
+                <div class="duration-info">
+                    <span class="duration-label">Duration:</span>
+                    <span class="duration-value">{{ service.duration }} minutes</span>
+                </div>
+            </div>
+
+            <div class="service-features">
+                <h2>Service Features</h2>
+                <ul>
+                    {% for field in service.required_fields %}
+                    <li>{{ field }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Document Upload Section -->
+        <div class="document-section">
+            <h2>Service Documents</h2>
+            
+            {% if user.is_staff %}
+            <div class="upload-form mb-4">
+                <h3>Upload New Document</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ document_form.as_p }}
+                    <button type="submit" class="btn btn-primary">Upload Document</button>
+                </form>
+            </div>
+            {% endif %}
+
+            <div class="documents-list">
+                {% for document in documents %}
+                <div class="document-card">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="bi bi-file-earmark-text document-icon"></i>
+                            <h4 class="d-inline ms-2">{{ document.name }}</h4>
+                            {% if document.is_private %}
+                            <span class="badge bg-warning ms-2">Private</span>
+                            {% endif %}
+                        </div>
+                        <div class="document-actions">
+                            <a href="{{ document.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                <i class="bi bi-download"></i> Download
+                            </a>
+                            {% if user.is_staff %}
+                            <a href="{% url 'delete_document' document.id %}" class="btn btn-sm btn-outline-danger ms-2">
+                                <i class="bi bi-trash"></i> Delete
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if document.description %}
+                    <p class="mt-2 text-muted">{{ document.description }}</p>
+                    {% endif %}
+                    <small class="text-muted">Uploaded by {{ document.uploaded_by.get_full_name }} on {{ document.uploaded_at|date:"F j, Y" }}</small>
+                </div>
+                {% empty %}
+                <div class="alert alert-info">
+                    No documents available for this service.
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="service-actions">
+            <div class="booking-section">
+                <h2>Book This Service</h2>
+                <p>Ready to get started? Book a consultation for this service now.</p>
+                <div class="price-display">
+                    <span class="price">₹{{ service.price|floatformat:2 }}</span>
+                </div>
+                {% if user.is_authenticated %}
+                <a href="{% url 'core:book_consultation' service.id %}" class="btn btn-primary">Book Now</a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}?next={% url 'core:service_detail' service.id %}" class="btn btn-primary">Login to Book</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.service-detail-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.service-detail-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.service-detail-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.service-description {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.service-detail-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.service-info {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.service-meta {
+    margin-bottom: 2rem;
+}
+
+.price-info, .duration-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.price-label, .duration-label {
+    color: #666;
+}
+
+.price-amount, .duration-value {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.service-features h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.service-features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.service-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #eee;
+}
+
+.service-actions {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.booking-section {
+    text-align: center;
+}
+
+.booking-section h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+.price-display {
+    margin: 2rem 0;
+}
+
+.price {
+    font-size: 2rem;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.btn-primary {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .service-detail-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .service-detail-header h1 {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %} 

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Document Classification - Costsecon Accounting Inc{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="card-title mb-0">AI Document Classification</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Upload Document</h5>
+                                    <form id="documentForm" enctype="multipart/form-data">
+                                        {% csrf_token %}
+                                        <div class="mb-3">
+                                            <label for="document" class="form-label">Select Document</label>
+                                            <input type="file" class="form-control" id="document" name="document" accept=".pdf,.jpg,.jpeg,.png" required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Classify Document</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Classification Results</h5>
+                                    <div id="classificationResults" style="display: none;">
+                                        <p><strong>Document Type:</strong> <span id="documentType"></span></p>
+                                        <p><strong>Confidence Score:</strong> <span id="confidenceScore"></span></p>
+                                        <div class="progress mt-2">
+                                            <div id="confidenceBar" class="progress-bar" role="progressbar" style="width: 0%"></div>
+                                        </div>
+                                    </div>
+                                    <div id="noResults" style="display: block;">
+                                        <p class="text-muted">Upload a document to see classification results.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('documentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('document', document.getElementById('document').files[0]);
+    formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+    
+    fetch('/ai/document-classification/', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        const resultsDiv = document.getElementById('classificationResults');
+        const noResultsDiv = document.getElementById('noResults');
+        const documentTypeSpan = document.getElementById('documentType');
+        const confidenceScoreSpan = document.getElementById('confidenceScore');
+        const confidenceBar = document.getElementById('confidenceBar');
+        
+        documentTypeSpan.textContent = data.document_type.replace('_', ' ');
+        confidenceScoreSpan.textContent = `${(data.confidence * 100).toFixed(1)}%`;
+        confidenceBar.style.width = `${data.confidence * 100}%`;
+        
+        if (data.confidence > 0.8) {
+            confidenceBar.className = 'progress-bar bg-success';
+        } else if (data.confidence > 0.6) {
+            confidenceBar.className = 'progress-bar bg-warning';
+        } else {
+            confidenceBar.className = 'progress-bar bg-danger';
+        }
+        
+        resultsDiv.style.display = 'block';
+        noResultsDiv.style.display = 'none';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while classifying the document.');
+    });
+});
+</script>
+{% endblock %} 

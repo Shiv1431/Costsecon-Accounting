@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Delete Consultant{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="text-center">Delete Consultant</h2>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">Are you sure you want to delete the consultant "{{ consultant.user_profile.user.get_full_name }}"?</p>
+                    <p class="text-center text-danger">This action cannot be undone.</p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-danger">Delete Consultant</button>
+                            <a href="{% url 'accounts:manage_consultants' %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
